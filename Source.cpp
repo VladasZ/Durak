@@ -1,8 +1,18 @@
 ﻿#include <iostream>
 #include <string.h>
 #include <time.h>
+#include <windows.h>
 
 using namespace std;
+
+void gotoxy(int x, int y)
+{
+	COORD coord;
+	coord.X = x;
+	coord.Y = y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
+
 
 class Card{
 
@@ -10,9 +20,12 @@ public:
 	int n;
 	char m;
 	//♥♦♣♠
-	void displayCard(){
+	void displayCard(int pos, int row){
+		gotoxy(pos * 4, row*4);
 		cout << " __" << endl;
+		gotoxy(pos * 4, row * 4+1);
 		cout << '|' << (char)m << " |" << endl;
+		gotoxy(pos * 4, row * 4+2);
 		cout << '|';
 		if (n < 10) cout << n << ' ';
 		if (n == 10) cout << "10";
@@ -35,7 +48,9 @@ public:
 
 		}
 		cout << '|' << endl;
+		gotoxy(pos * 4, row * 4+3);
 		cout << "|__|" << endl;
+		gotoxy(pos * 4, row * 4+4);
 	}
 
 };
@@ -57,8 +72,13 @@ public:
 	};
 
 	void displayDeck(){
-		for (int i = 0; i < 36; i++){
-			deck[i].displayCard();
+		int card = 0;
+		
+		for (int i = 0; i < 4; i++){
+			for (int j = 0; j < 9; j++){
+				deck[card].displayCard(j, i);
+				card++;
+			}
 		}
 	};
 
@@ -68,6 +88,7 @@ void main(){
 	Deck deck;
 
 	deck.displayDeck();
+
 
 }
 
