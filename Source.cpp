@@ -2,8 +2,17 @@
 #include <string.h>
 #include <time.h>
 #include <windows.h>
+#include <stdlib.h>
 
 using namespace std;
+
+#define RAND rand() / 920
+
+
+int randomCard(){
+	
+	return rand() / 920;
+}
 
 void gotoxy(int x, int y)
 {
@@ -15,7 +24,7 @@ void gotoxy(int x, int y)
 
 
 class Card{
-
+	
 public:
 	int n;
 	char m;
@@ -73,7 +82,7 @@ public:
 
 	void displayDeck(){
 		int card = 0;
-		
+
 		for (int i = 0; i < 4; i++){
 			for (int j = 0; j < 9; j++){
 				deck[card].displayCard(j, i);
@@ -82,19 +91,48 @@ public:
 		}
 	};
 
+
+
+	void shuffle(){
+		Card temp, *foo, *bar;
+		for (int i = 0; i < 5000000; i++){
+			foo = &deck[RAND];
+			bar = &deck[RAND];
+			
+			temp = *foo;
+			
+			*foo = *bar;
+			*bar = temp;
+
+
+		}
+	}
+};
+
+class Player{
+public:
+	Card hand[36];
+	void takeCard(){
+
+	}
 };
 
 void main(){
+	srand(time(NULL));
 	Deck deck;
 
+
+	deck.shuffle();
+	//deck.deck[5] = deck.deck[3];
+
 	deck.displayDeck();
-
-
+	
 }
 
 /*
-__
-|♥5|
+ __
+|♦ |
+|10|
 |__|
 
 */
