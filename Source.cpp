@@ -32,11 +32,11 @@ public:
 	int displayCard(int pos, int row){
 		if (!n) return 0;
 
-		gotoxy(pos * 4, row*4);
+		gotoxy(pos, row);
 		cout << " __" << endl;
-		gotoxy(pos * 4, row * 4+1);
+		gotoxy(pos, row+1);
 		cout << '|' << (char)m << " |" << endl;
-		gotoxy(pos * 4, row * 4+2);
+		gotoxy(pos, row+2);
 		cout << '|';
 		if (n < 10) cout << n << ' ';
 		if (n == 10) cout << "10";
@@ -59,9 +59,9 @@ public:
 
 		}
 		cout << '|' << endl;
-		gotoxy(pos * 4, row * 4+3);
+		gotoxy(pos, row+3);
 		cout << "|__|" << endl;
-		gotoxy(pos * 4, row * 4+4);
+		gotoxy(pos, row+4);
 		return 0;
 	}
 
@@ -73,7 +73,7 @@ public:
 	int cardLeft = 35;
 	
 	Deck(){ ////////////////////////////////// конструктор колоды
-		
+		srand(time(NULL));
 		int cardN = 0;
 		for (int i = 3; i < 7; i++){
 			for (int j = 6; j < 15; j++, cardN++){
@@ -122,35 +122,95 @@ class Player{
 public:
 	Card hand[35];
 	int cardLeft = 0;
-	void takeCard(){
+
+	void takeOneCard(){
 		hand[cardLeft] = deck.deck[deck.cardLeft];
 		deck.deck[deck.cardLeft].n = 0;
 		deck.cardLeft--;
 		cardLeft++;
 	}
-
+	void takeCard(){
+		while (cardLeft < 6) takeOneCard();
+	}
 	void showHand(int pos){
 
 		for (int i = 0; i < cardLeft; i++){
-			hand[i].displayCard(i+3, pos);
+			hand[i].displayCard(i*4+12, pos);
 		}
 
 	}
+		void sortHand(){
+		for (int i = 0; i < cardLeft-1; i++){
+			for (int j = 0; j < cardLeft-1; j++){
+
+				if (hand[j].n > hand[j + 1].n){
+
+					Card temp = hand[j];
+					hand[j] = hand[j + 1];
+					hand[j + 1] = temp;
+
+				}
+
+			}
+		}
+	}
+
+		Player(){
+			takeCard();
+			sortHand();
+		}
+
+
+};
+
+class Table{
+
+public:
+	Card table[35];
+	int cardLeft = 0;
+
+	void takeOneCard(){
+		table[cardLeft] = deck.deck[deck.cardLeft];
+		deck.deck[deck.cardLeft].n = 0;
+		deck.cardLeft--;
+		cardLeft++;
+	}
+	void takeCard(){
+		while (cardLeft < 6) takeOneCard();
+	}
+
+	void display(){
+
+		int shift = 0;
+		for (int i = 0; i < cardLeft; i++){
+
+			table[i].displayCard(15+i*2, 8 + shift);
+
+			if (!shift){ shift = 2; continue; }
+			shift = 0;
+
+		}
+
+
+	}
+
+
+
 };
 
 void main(){
-	srand(time(NULL));
-	Player player;
 
-	player.takeCard();
-	player.takeCard();
-	player.takeCard();
-	player.takeCard();
-	player.takeCard();
-	player.takeCard();
+	Player player,player2;
+	Table table;
+	table.takeCard();
+	table.display();
 
-	showDeck();
-	player.showHand(5);
+	
+
+	player2.showHand(0);
+	player.showHand(20);
+
+	
 	
 }
 
