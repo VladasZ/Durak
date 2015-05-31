@@ -8,6 +8,8 @@
 using namespace std;
 
 #define RAND rand()%36
+#define PL1 1
+#define PL2 0
 
 void gotoxy(int x, int y)
 {
@@ -170,6 +172,7 @@ void showDeck(){
 	}
 }
 
+
 class Player{
 public:
 	Card hand[35];
@@ -215,10 +218,12 @@ public:
 	}
 
 
-		void dropCard(int n){
+		int dropCard(int n){
+			if (n > cardLeft-1) return 0;
+
 			table.table[table.cardLeft] = hand[n];
 			hand[n].n = 0;
-			for (int i = n; i < cardLeft-1 - n; i++){
+			for (int i = n; i < cardLeft; i++){
 				hand[i] = hand[i + 1];
 				if (i == cardLeft - 2) hand[i+1].n = 0;
 			}
@@ -227,6 +232,7 @@ public:
 
 		table.display();
 		showHand();
+		return 0;
 	}
 
 
@@ -234,36 +240,94 @@ public:
 
 Player player=0, player2=20;
 
-void control(){
+void debugDisplay(){
 
-	char a = getch();
+	gotoxy(50, 20); cout << "player 1 cardLeft: "<< player.cardLeft;
+	gotoxy(50, 21); cout << "player 2 cardLeft: " << player2.cardLeft;
+	gotoxy(50, 22); cout << "deck cardLeft: " << deck.cardLeft;
+	gotoxy(50, 23); cout << "table cardLeft: " << table.cardLeft;
 
-	switch (a){
-	case'0':
-		showDeck();
-		break;
-	case'1':
-		player.showHand();
-		break;
-	case'2':
-		player2.showHand();
-		break;
-	case'3':
-		table.display();
-		break;
-	case'4':
-		player.dropCard(0);
-		break;
-	case'5':
-		player2.dropCard(0);
-		break;
-	case'6':
-		tableCls();
-		break;
-	default:
 
-		break;
+}
+
+
+void movesControl(){
+
+	int move = PL1;
+
+	player.showHand();
+	player2.showHand();
+	gotoxy(9, 2); cout << '0';
+	debugDisplay();
+
+
+	while (1){
+		
+
+
+
+		////////// getch//////////////////
+		char a = getch();
+			switch (a){
+		case'q':
+			move = PL1;
+			break;
+		case'w':
+			move = PL2;
+			break;
+	 	case'1':
+			if (move) player.dropCard(0);
+			else player2.dropCard(0);
+			break;
+		case'2':
+			if (move) player.dropCard(1);
+			else player2.dropCard(1);
+			break;
+		case'3':
+			if (move) player.dropCard(2);
+			else player2.dropCard(2);
+			break;
+		case'4':
+			if (move) player.dropCard(3);
+			else player2.dropCard(3);
+			break;
+		case'5':
+			if (move) player.dropCard(4);
+			else player2.dropCard(4);
+			break;
+		case'6':
+			if (move) player.dropCard(5);
+			else player2.dropCard(5);
+			break;
+		case'`':
+			if (move) player.showHand();
+			else player2.showHand();
+			break;
+		case'e':
+			table.display();
+			break;
+		case'r':
+			showDeck();
+			break;
+		case't':
+			tableCls();
+			break;
+		case'z':
+			goto l;
+			break;
+		default:
+
+			break;
+		}
+			if (move) { gotoxy(9, 2); cout << '0';  gotoxy(9, 22); cout << ' '; }
+			else { gotoxy(9, 22); cout << '0'; gotoxy(9, 2); cout << ' '; }
+
+
+			debugDisplay();
+
 	}
+l:;
+
 
 }
 
@@ -273,8 +337,8 @@ void main(){
 	
 
 
-	control();
-	main();
+	movesControl();
+
 	
 	
 }
