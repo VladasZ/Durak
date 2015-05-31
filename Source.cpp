@@ -3,16 +3,11 @@
 #include <time.h>
 #include <windows.h>
 #include <stdlib.h>
+#include <conio.h>
 
 using namespace std;
 
-#define RAND rand() / 920
-
-
-int randomCard(){
-	
-	return rand() / 920;
-}
+#define RAND rand()%36
 
 void gotoxy(int x, int y)
 {
@@ -30,7 +25,18 @@ public:
 	char m;
 	//♥♦♣♠
 	int displayCard(int pos, int row){
-		if (!n) return 0;
+		if (!n) {// пустая карта
+		
+			gotoxy(pos, row);
+			cout << "    " << endl;
+			gotoxy(pos, row + 1);
+			cout << "    " << endl;
+			gotoxy(pos, row + 2);
+			cout << "    " << endl;
+			gotoxy(pos, row + 3);
+			cout << "    " << endl;
+			return 0;
+		}
 
 		gotoxy(pos, row);
 		cout << " __" << endl;
@@ -61,7 +67,7 @@ public:
 		cout << '|' << endl;
 		gotoxy(pos, row+3);
 		cout << "|__|" << endl;
-		gotoxy(pos, row+4);
+	//	gotoxy(pos, row+4);
 		return 0;
 	}
 
@@ -107,61 +113,13 @@ public:
 
 Deck deck;
 
-void showDeck(){
-	int card = 0;
+void tableCls(){
 
-	for (int i = 0; i < 4; i++){
-		for (int j = 0; j < 9; j++){
-			deck.deck[card].displayCard(j, i);
-			card++;
-		}
+	for (int i = 0; i < 15; i++){
+		gotoxy(0, 4 + i); cout << "                                                          ";
 	}
+
 }
-
-class Player{
-public:
-	Card hand[35];
-	int cardLeft = 0;
-
-	void takeOneCard(){
-		hand[cardLeft] = deck.deck[deck.cardLeft];
-		deck.deck[deck.cardLeft].n = 0;
-		deck.cardLeft--;
-		cardLeft++;
-	}
-	void takeCard(){
-		while (cardLeft < 6) takeOneCard();
-	}
-	void showHand(int pos){
-
-		for (int i = 0; i < cardLeft; i++){
-			hand[i].displayCard(i*4+12, pos);
-		}
-
-	}
-		void sortHand(){
-		for (int i = 0; i < cardLeft-1; i++){
-			for (int j = 0; j < cardLeft-1; j++){
-
-				if (hand[j].n > hand[j + 1].n){
-
-					Card temp = hand[j];
-					hand[j] = hand[j + 1];
-					hand[j + 1] = temp;
-
-				}
-
-			}
-		}
-	}
-
-		Player(){
-			takeCard();
-			sortHand();
-		}
-
-
-};
 
 class Table{
 
@@ -180,11 +138,11 @@ public:
 	}
 
 	void display(){
-
+		tableCls();
 		int shift = 0;
 		for (int i = 0; i < cardLeft; i++){
 
-			table[i].displayCard(15+i*2, 8 + shift);
+			table[i].displayCard(15 + i * 2, 8 + shift);
 
 			if (!shift){ shift = 2; continue; }
 			shift = 0;
@@ -198,18 +156,125 @@ public:
 
 };
 
+Table table;
+
+void showDeck(){
+	tableCls();
+	int card = 0;
+
+	for (int i = 0; i < 4; i++){
+		for (int j = 0; j < 9; j++){
+			deck.deck[card].displayCard(j*4+10, i*4+4);
+			card++;
+		}
+	}
+}
+
+class Player{
+public:
+	Card hand[35];
+	int pos;
+	int cardLeft = 0;
+
+	Player (int a){
+		pos = a;
+		takeCard(); 
+		sortHand();
+	}
+
+	void takeOneCard(){
+		hand[cardLeft] = deck.deck[deck.cardLeft];
+		deck.deck[deck.cardLeft].n = 0;
+		deck.cardLeft--;
+		cardLeft++;
+	}
+	void takeCard(){
+		while (cardLeft < 6) takeOneCard();
+	}
+	void showHand(){
+
+		for (int i = 0; i < 6; i++){
+			hand[i].displayCard(i*4+12, pos);
+		}
+
+	}
+	void sortHand(){
+		for (int i = 0; i < cardLeft-1; i++){
+			for (int j = 0; j < cardLeft-1; j++){
+
+				if (hand[j].n > hand[j + 1].n){
+
+					Card temp = hand[j];
+					hand[j] = hand[j + 1];
+					hand[j + 1] = temp;
+
+				}
+
+			}
+		}
+	}
+
+
+		void dropCard(int n){
+			table.table[table.cardLeft] = hand[n];
+			hand[n].n = 0;
+			for (int i = n; i < cardLeft-1 - n; i++){
+				hand[i] = hand[i + 1];
+				if (i == cardLeft - 2) hand[i+1].n = 0;
+			}
+		table.cardLeft++;
+		cardLeft--;
+
+		table.display();
+		showHand();
+	}
+
+
+};
+
+Player player=0, player2=20;
+
+void control(){
+
+	char a = getch();
+
+	switch (a){
+	case'0':
+		showDeck();
+		break;
+	case'1':
+		player.showHand();
+		break;
+	case'2':
+		player2.showHand();
+		break;
+	case'3':
+		table.display();
+		break;
+	case'4':
+		player.dropCard(0);
+		break;
+	case'5':
+		player2.dropCard(0);
+		break;
+	case'6':
+		tableCls();
+		break;
+	default:
+
+		break;
+	}
+
+}
+
+
+
 void main(){
-
-	Player player,player2;
-	Table table;
-	table.takeCard();
-	table.display();
-
 	
 
-	player2.showHand(0);
-	player.showHand(20);
 
+	control();
+	main();
 	
 	
 }
