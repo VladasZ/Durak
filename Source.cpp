@@ -199,12 +199,16 @@ public:
 		deck.cardLeft--;
 		cardLeft++;
 	}
-	void takeCard(){
+	int takeCard(){
+		if (!(deck.cardLeft+1)) return 0;
+		if (cardLeft > 6) return 0;
 		while (cardLeft < 6) takeOneCard();
+		sortHand();
+		return 0;
 	}
 	void showHand(){
 
-		for (int i = 0; i < 6; i++){
+		for (int i = 0; i < cardLeft; i++){
 			hand[i].displayCard(i*4+12, pos);
 		}
 
@@ -255,21 +259,51 @@ public:
 		return 0;
 	}
 
+	bool _throw(int n){
+		for (int i = 0; i < table.cardLeft; i++){
+			if (hand[n].n == table.table[i].n) return true;
+		}
+		return false;
+	}
+
 	bool canDrop(int n){
 
 			// "битье" карты
-		if ((table.table[table.cardLeft - 1].m == hand[n].m &&
-			table.table[table.cardLeft - 1].n < hand[n].n)) return true;
+		if (table.table[table.cardLeft - 1].m == hand[n].m        &&
+			table.table[table.cardLeft - 1].n < hand[n].n         &&
+			table.cardLeft%2
+			) return true;
 
 
 
 
 
 			// ход на пустой стол
-			if (table.cardLeft == 0) return true;
+			if (!table.cardLeft) return true;
+
+
+			// следующий атакующий ход
+			if (!(table.cardLeft % 2) &&
+				_throw(n)
+
+
+
+				) return true;
 
 			return false;
 		
+	}
+
+	void takeTable(){
+
+		while (table.cardLeft){
+			hand[cardLeft] = table.table[table.cardLeft-1];
+			table.cardLeft--;
+			table.table[table.cardLeft].n = 0;
+			cardLeft++;
+			sortHand();
+		}
+
 	}
 
 
@@ -278,16 +312,19 @@ public:
 Player player=0, player2=20;
 
 void debugDisplay(){
-
+	gotoxy(50, 7); cout << "Очистить экран:  B";
+	gotoxy(50, 8); cout << "Показать колоду:  V";
+	gotoxy(50, 9); cout << "Забрать:  C";
 	gotoxy(50, 10); cout << "Отбой:  X";
+	/*
 	gotoxy(50, 13); cout << "player 1 cardLeft: "<< player.cardLeft;
 	gotoxy(50, 14); cout << "         turn: " << player.turn;
 	gotoxy(50, 15); cout << "         attack: " << player.attack;
 	gotoxy(50, 18); cout << "player 2 cardLeft: " << player2.cardLeft;
 	gotoxy(50, 19); cout << "         turn: " << player2.turn;
 	gotoxy(50, 20); cout << "         attack: " << player2.attack;
-	gotoxy(50, 22); cout << "deck cardLeft: " << deck.cardLeft;
-	gotoxy(50, 23); cout << "table cardLeft: " << table.cardLeft;
+	gotoxy(50, 22); cout << "deck cardLeft: " << deck.cardLeft+1;
+	gotoxy(50, 23); cout << "table cardLeft: " << table.cardLeft;*/
 
 
 }
@@ -331,33 +368,54 @@ void movesControl(){
 				player.turn++;
 			}
 			break;
-		case'`':
-			if (moveTurn) player.showHand();
-			else player2.showHand();
+		case'c':// забрать
+			if (player.turn){
+				player.takeTable();
+				player.turn--;
+				player2.turn++;
+				table.display();
+				player.showHand();
+
+
+			}
+			else if (player2.turn){
+				player2.takeTable();
+				player2.turn--;
+				player.turn++;
+				table.display();
+				player2.showHand();
+
+			}
 			break;
 		case'e':
 			table.display();
 			break;
-		case'r':
+		case'v':
 			deck.show();
 			break;
-		case't':
+		case'b':
 			tableCls();
 			break;
 		case'z':
 			goto l;
 			break;
 		case'x':
-			if (attackTurn) attackTurn--;
-			else attackTurn++;
+			table.cardLeft = 0;
+			table.display();
 			break;
 		default:
 
 			break;
 		}
-			if (moveTurn) { gotoxy(9, 2); cout << '0';  gotoxy(9, 22); cout << ' '; }
+			if (player.turn) { gotoxy(9, 2); cout << '0';  gotoxy(9, 22); cout << ' '; }
 			else { gotoxy(9, 22); cout << '0'; gotoxy(9, 2); cout << ' '; }
 
+
+	
+			player.takeCard();
+			player2.takeCard();
+			player.showHand();
+			player2.showHand();
 
 			debugDisplay();
 
@@ -374,6 +432,7 @@ void main(){
 
 
 	movesControl();
+	
 
 	
 	
