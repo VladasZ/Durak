@@ -24,7 +24,7 @@ void gotoxy(int x, int y)
 void tableCls(){
 
 	for (int i = 0; i < 15; i++){
-		gotoxy(0, 4 + i); 
+		gotoxy(10, 4 + i); 
 		for (int j = 0; j < 50; j++){
 			cout << " ";
 		}
@@ -91,7 +91,9 @@ public:
 class Deck{
 public:
 	Card deck[36];
+	Card trump;
 	int cardLeft = 35;
+
 
 	Deck(){ ////////////////////////////////// конструктор колоды
 		srand(time(NULL));
@@ -116,6 +118,8 @@ public:
 
 
 		}
+
+		trump = deck[0];
 	};
 
 	void show(){
@@ -279,6 +283,14 @@ public:
 
 	bool canDrop(int n){
 
+
+		// битье карты козырем
+		if (deck.trump.m == hand[n].m &&
+			table.table[table.cardLeft - 1].m != deck.trump.m  &&
+			table.cardLeft % 2
+			) return true;
+
+
 		// "битье" карты
 		if (table.table[table.cardLeft - 1].m == hand[n].m &&
 			table.table[table.cardLeft - 1].n < hand[n].n &&
@@ -390,8 +402,8 @@ void remove(){
 
 void movesControl(){
 
-
-
+	deck.trump.displayCard(4, 10);
+	
 	player.showHand();
 	player2.showHand();
 	gotoxy(9, 2); cout << '0';
