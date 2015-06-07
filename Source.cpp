@@ -24,36 +24,40 @@ void gotoxy(int x, int y)
 void tableCls(){
 
 	for (int i = 0; i < 15; i++){
-		gotoxy(0, 4 + i); cout << "                                                          ";
+		gotoxy(0, 4 + i); 
+		for (int j = 0; j < 50; j++){
+			cout << " ";
+		}
+		
 	}
 
 }
 
 class Card{
-	
+
 public:
 	int n;
 	char m;
 	//♥♦♣♠
 	int displayCard(int pos, int row){
 		if (!n) {// пустая карта
-		
+
 			gotoxy(pos, row);
-			cout << "    " << endl;
+			cout << " " << endl;
 			gotoxy(pos, row + 1);
-			cout << "    " << endl;
+			cout << " " << endl;
 			gotoxy(pos, row + 2);
-			cout << "    " << endl;
+			cout << " " << endl;
 			gotoxy(pos, row + 3);
-			cout << "    " << endl;
+			cout << " " << endl;
 			return 0;
 		}
 
 		gotoxy(pos, row);
 		cout << " __" << endl;
-		gotoxy(pos, row+1);
+		gotoxy(pos, row + 1);
 		cout << '|' << (char)m << " |" << endl;
-		gotoxy(pos, row+2);
+		gotoxy(pos, row + 2);
 		cout << '|';
 		if (n < 10) cout << n << ' ';
 		if (n == 10) cout << "10";
@@ -76,9 +80,9 @@ public:
 
 		}
 		cout << '|' << endl;
-		gotoxy(pos, row+3);
+		gotoxy(pos, row + 3);
 		cout << "|__|" << endl;
-	//	gotoxy(pos, row+4);
+		// gotoxy(pos, row+4);
 		return 0;
 	}
 
@@ -88,7 +92,7 @@ class Deck{
 public:
 	Card deck[36];
 	int cardLeft = 35;
-	
+
 	Deck(){ ////////////////////////////////// конструктор колоды
 		srand(time(NULL));
 		int cardN = 0;
@@ -185,11 +189,11 @@ public:
 	int attack = 0;
 	int cardLeft = 0;
 
-	Player (int a){
+	Player(int a){
 		turn = 0;
 		attack = 0;
 		pos = a;
-		takeCard(); 
+		takeCard();
 		sortHand();
 	}
 
@@ -200,7 +204,7 @@ public:
 		cardLeft++;
 	}
 	int takeCard(){
-		if (!(deck.cardLeft+1)) return 0;
+		if (!(deck.cardLeft + 1)) return 0;
 		if (cardLeft > 6) return 0;
 		while (cardLeft < 6) takeOneCard();
 		sortHand();
@@ -208,14 +212,21 @@ public:
 	}
 	void showHand(){
 
+		for (int i = 0; i < 4; i++){
+			gotoxy(10, pos + i);
+			for (int j = 0; j < 50; j++){
+				cout << ' ';
+			}
+		}
+
 		for (int i = 0; i < cardLeft; i++){
-			hand[i].displayCard(i*4+12, pos);
+			hand[i].displayCard(i * 4 + 12, pos);
 		}
 
 	}
 	void sortHand(){
-		for (int i = 0; i < cardLeft-1; i++){
-			for (int j = 0; j < cardLeft-1; j++){
+		for (int i = 0; i < cardLeft - 1; i++){
+			for (int j = 0; j < cardLeft - 1; j++){
 
 				if (hand[j].n > hand[j + 1].n){
 
@@ -231,9 +242,7 @@ public:
 
 
 	int dropCard(int n){
-			if (n > cardLeft-1) return 0; 
-
-			
+		if (n > cardLeft - 1) return 0;
 
 
 
@@ -243,19 +252,21 @@ public:
 
 
 
-				//////////// drop logic /////////////
-				table.table[table.cardLeft] = hand[n];
-				hand[n].n = 0;
-				for (int i = n; i < cardLeft; i++){
-					hand[i] = hand[i + 1];
-					if (i == cardLeft - 2) hand[i + 1].n = 0;
-				}
-				table.cardLeft++;
-				cardLeft--;
 
-				table.display();
-				showHand();
-			
+
+		//////////// drop logic /////////////
+		table.table[table.cardLeft] = hand[n];
+		hand[n].n = 0;
+		for (int i = n; i < cardLeft; i++){
+			hand[i] = hand[i + 1];
+			if (i == cardLeft - 2) hand[i + 1].n = 0;
+		}
+		table.cardLeft++;
+		cardLeft--;
+
+		table.display();
+		showHand();
+
 		return 0;
 	}
 
@@ -268,36 +279,36 @@ public:
 
 	bool canDrop(int n){
 
-			// "битье" карты
-		if (table.table[table.cardLeft - 1].m == hand[n].m        &&
-			table.table[table.cardLeft - 1].n < hand[n].n         &&
-			table.cardLeft%2
+		// "битье" карты
+		if (table.table[table.cardLeft - 1].m == hand[n].m &&
+			table.table[table.cardLeft - 1].n < hand[n].n &&
+			table.cardLeft % 2
 			) return true;
 
 
 
 
 
-			// ход на пустой стол
-			if (!table.cardLeft) return true;
+		// ход на пустой стол
+		if (!table.cardLeft) return true;
 
 
-			// следующий атакующий ход
-			if (!(table.cardLeft % 2) &&
-				_throw(n)
+		// следующий атакующий ход
+		if (!(table.cardLeft % 2) &&
+			_throw(n)
 
 
 
-				) return true;
+			) return true;
 
-			return false;
-		
+		return false;
+
 	}
 
 	void takeTable(){
 
 		while (table.cardLeft){
-			hand[cardLeft] = table.table[table.cardLeft-1];
+			hand[cardLeft] = table.table[table.cardLeft - 1];
 			table.cardLeft--;
 			table.table[table.cardLeft].n = 0;
 			cardLeft++;
@@ -309,58 +320,98 @@ public:
 
 };
 
-Player player=0, player2=20;
+Player player = 0, player2 = 20;
 
 void debugDisplay(){
-	gotoxy(50, 7); cout << "Очистить экран:  B";
-	gotoxy(50, 8); cout << "Показать колоду:  V";
-	gotoxy(50, 9); cout << "Забрать:  C";
-	gotoxy(50, 10); cout << "Отбой:  X";
+	gotoxy(50, 7); cout << "Очистить экран: B";
+	gotoxy(50, 8); cout << "Показать колоду: V";
+	gotoxy(50, 9); cout << "Забрать: C";
+	gotoxy(50, 10); cout << "Отбой: X";
 	/*
 	gotoxy(50, 13); cout << "player 1 cardLeft: "<< player.cardLeft;
-	gotoxy(50, 14); cout << "         turn: " << player.turn;
-	gotoxy(50, 15); cout << "         attack: " << player.attack;
+	gotoxy(50, 14); cout << " turn: " << player.turn;
+	gotoxy(50, 15); cout << " attack: " << player.attack;
 	gotoxy(50, 18); cout << "player 2 cardLeft: " << player2.cardLeft;
-	gotoxy(50, 19); cout << "         turn: " << player2.turn;
-	gotoxy(50, 20); cout << "         attack: " << player2.attack;
+	gotoxy(50, 19); cout << " turn: " << player2.turn;
+	gotoxy(50, 20); cout << " attack: " << player2.attack;
 	gotoxy(50, 22); cout << "deck cardLeft: " << deck.cardLeft+1;
 	gotoxy(50, 23); cout << "table cardLeft: " << table.cardLeft;*/
 
 
 }
 
+void take(){
+	if (table.cardLeft % 2){
+		if (player.turn){
+			player.takeTable();
+			player.turn--;
+			player2.turn++;
+			table.display();
+			player.showHand();
+			player2.takeCard();
+
+
+		}
+		else if (player2.turn){
+			player2.takeTable();
+			player2.turn--;
+			player.turn++;
+			table.display();
+			player2.showHand();
+			player.takeCard();
+
+		}
+	}
+}
+
+void remove(){
+	if (!(table.cardLeft % 2) && table.cardLeft){
+		if (player.turn){
+			player.turn--;
+			player2.turn++;
+			table.display();
+
+
+
+		}
+		else if (player2.turn){
+			player2.turn--;
+			player.turn++;
+			table.display();
+		}
+
+
+		player.takeCard();
+		player2.takeCard();
+		table.cardLeft = 0;
+		table.display();
+	}
+}
 
 void movesControl(){
 
-	
+
 
 	player.showHand();
 	player2.showHand();
 	gotoxy(9, 2); cout << '0';
-	
+
 	player.attack = 1;
 	player.turn = 1;
 	debugDisplay();
 	while (1){
-		
+
 
 
 
 		////////// getch//////////////////
 		char a = getch();
-			switch (a){
-		case'q':
-			table.clear();
-			break;
-		case'w':
-			if (moveTurn) moveTurn--;
-			else moveTurn++;
-			break;
-		case '1': case '2':case '3':case '4':case '5':case '6':
-			if (player.turn && player.canDrop(a-49)){ 
+		switch (a){	
+		case '1': case '2':case '3':case '4':case '5':case '6': case '7':case '8':case '9':case '0':
+			if (player.turn && player.canDrop(a - 49)){
 				player.dropCard(a - 49);
-				player.turn--; 
-				player2.turn++; 
+				player.turn--;
+				player2.turn++;
 			}
 			else if (player2.turn && player2.canDrop(a - 49)){
 				player2.dropCard(a - 49);
@@ -369,26 +420,7 @@ void movesControl(){
 			}
 			break;
 		case'c':// забрать
-			if (player.turn){
-				player.takeTable();
-				player.turn--;
-				player2.turn++;
-				table.display();
-				player.showHand();
-
-
-			}
-			else if (player2.turn){
-				player2.takeTable();
-				player2.turn--;
-				player.turn++;
-				table.display();
-				player2.showHand();
-
-			}
-			break;
-		case'e':
-			table.display();
+			take();
 			break;
 		case'v':
 			deck.show();
@@ -399,25 +431,23 @@ void movesControl(){
 		case'z':
 			goto l;
 			break;
-		case'x':
-			table.cardLeft = 0;
-			table.display();
+		case'x': /////////// отбой
+			remove();
 			break;
 		default:
 
 			break;
 		}
-			if (player.turn) { gotoxy(9, 2); cout << '0';  gotoxy(9, 22); cout << ' '; }
-			else { gotoxy(9, 22); cout << '0'; gotoxy(9, 2); cout << ' '; }
+		if (player.turn) { gotoxy(9, 2); cout << '0'; gotoxy(9, 22); cout << ' '; }
+		else { gotoxy(9, 22); cout << '0'; gotoxy(9, 2); cout << ' '; }
 
 
-	
-			player.takeCard();
-			player2.takeCard();
-			player.showHand();
-			player2.showHand();
 
-			debugDisplay();
+
+		player.showHand();
+		player2.showHand();
+
+		debugDisplay();
 
 	}
 l:;
@@ -432,9 +462,8 @@ void main(){
 
 
 	movesControl();
-	
 
-	
-	
+
+
+
 }
-
